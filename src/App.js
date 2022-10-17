@@ -23,9 +23,25 @@ function App() {
   ]);
 
   const [myCart, setMyCart] = React.useState();
+  const [showModal, setShowModal] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleModal = (event) => {
+      if (event.target.classList.contains("modal-bg")) {
+        setShowModal(false);
+      }
+    };
+
+    window.addEventListener("click", handleModal);
+
+    return () => {
+      window.removeEventListener("click", handleModal);
+    };
+  }, []);
 
   return (
     <div className="App">
+      <div />
       <div className="wrapper">
         <div className="screen -left">
           <img
@@ -33,26 +49,29 @@ function App() {
             className="logo"
             alt="로고"
           />
-          <div class="title">Picked items</div>
-          <div class="shop-items">
+          <div className="title">Picked items</div>
+          <div className="shop-items">
             {products &&
               products.map((item, index) => {
                 return (
                   <div key={`products-${index}`}>
-                    <div class="item">
-                      <div class="item-block">
-                        <div class="image-area">
+                    <div className="item">
+                      <div className="item-block">
+                        <div className="image-area">
                           <img
+                            onClick={() => {
+                              setShowModal(true);
+                            }}
                             src={item.image}
                             alt="상품이미지"
                             className="image"
                           />
                         </div>
-                        <div class="name">{item.name}</div>
-                        <div class="description">{item.descrition}</div>
-                        <div class="bottom-area">
-                          <div class="price">{item.price}</div>
-                          <div class="button">
+                        <div className="name">{item.name}</div>
+                        <div className="description">{item.descrition}</div>
+                        <div className="bottom-area">
+                          <div className="price">{item.price}</div>
+                          <div className="button">
                             <p>ADD TO CART</p>
                           </div>
                         </div>
@@ -70,26 +89,29 @@ function App() {
             className="logo"
             alt="로고"
           />
-          <div class="title">Your Cart</div>
-          <div class="shop-items">
+          <div className="title">Your Cart</div>
+          <div className="shop-items">
             {myCart ? (
               myCart.map((item, index) => {
                 return (
                   <div key={`products-${index}`}>
-                    <div class="item">
-                      <div class="item-block">
-                        <div class="image-area">
+                    <div className="item">
+                      <div className="item-block">
+                        <div className="image-area">
                           <img
+                            onClick={() => {
+                              setShowModal(true);
+                            }}
                             src={item.image}
                             alt="상품이미지"
                             className="image"
                           />
                         </div>
-                        <div class="name">{item.name}</div>
-                        <div class="description">{item.descrition}</div>
-                        <div class="bottom-area">
-                          <div class="price">{item.price}</div>
-                          <div class="button">
+                        <div className="name">{item.name}</div>
+                        <div className="description">{item.descrition}</div>
+                        <div className="bottom-area">
+                          <div className="price">{item.price}</div>
+                          <div className="button">
                             <p>ADD TO CART</p>
                           </div>
                         </div>
@@ -115,6 +137,15 @@ function App() {
           </div>
         </div>
       </div>
+
+      {showModal && (
+        <React.Fragment>
+          <div className="modal-bg" />
+          <div className="modal">
+            <div>zzzzzzzzzzzzzz</div>
+          </div>
+        </React.Fragment>
+      )}
     </div>
   );
 }
