@@ -2,6 +2,11 @@ import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
 
+const Test = React.memo(() => {
+  console.log("Hello Test Component..");
+  return <div>Test</div>;
+});
+
 function App() {
   const [products, setProducts] = React.useState([
     {
@@ -28,6 +33,9 @@ function App() {
     image: null,
   });
 
+  let [x, setX] = React.useState(0);
+  let [y, setY] = React.useState(0);
+
   React.useEffect(() => {
     const handleModal = (event) => {
       if (event.target.classList.contains("modal-bg")) {
@@ -42,9 +50,28 @@ function App() {
     };
   }, []);
 
+  const a = React.useCallback(() => {
+    console.log(y);
+  }, [x]);
+
+  a();
+
   return (
     <div className="App">
-      <div />
+      <button
+        onClick={() => {
+          setX((x += 1));
+        }}
+      >
+        X {x}
+      </button>
+      <button
+        onClick={() => {
+          setY((y += 1));
+        }}
+      >
+        Y {y}
+      </button>
       <div className="wrapper">
         <div className="screen -left">
           <img
