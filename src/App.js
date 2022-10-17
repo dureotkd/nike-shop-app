@@ -23,7 +23,10 @@ function App() {
   ]);
 
   const [myCart, setMyCart] = React.useState();
-  const [showModal, setShowModal] = React.useState(false);
+  const [showModal, setShowModal] = React.useState({
+    show: false,
+    image: null,
+  });
 
   React.useEffect(() => {
     const handleModal = (event) => {
@@ -60,7 +63,10 @@ function App() {
                         <div className="image-area">
                           <img
                             onClick={() => {
-                              setShowModal(true);
+                              const cloneShowModal = { ...showModal };
+                              cloneShowModal.image = item.image;
+                              cloneShowModal.show = true;
+                              setShowModal(cloneShowModal);
                             }}
                             src={item.image}
                             alt="상품이미지"
@@ -100,7 +106,10 @@ function App() {
                         <div className="image-area">
                           <img
                             onClick={() => {
-                              setShowModal(true);
+                              const cloneShowModal = { ...showModal };
+                              cloneShowModal.image = item.image;
+                              cloneShowModal.show = true;
+                              setShowModal(cloneShowModal);
                             }}
                             src={item.image}
                             alt="상품이미지"
@@ -138,11 +147,11 @@ function App() {
         </div>
       </div>
 
-      {showModal && (
+      {showModal.show && (
         <React.Fragment>
           <div className="modal-bg" />
           <div className="modal">
-            <div>zzzzzzzzzzzzzz</div>
+            <img src={showModal.image} alt="확대사진" />
           </div>
         </React.Fragment>
       )}
