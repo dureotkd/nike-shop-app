@@ -2,11 +2,6 @@ import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
 
-const Test = React.memo(() => {
-  console.log("Hello Test Component..");
-  return <div>Test</div>;
-});
-
 function App() {
   const [products, setProducts] = React.useState([
     {
@@ -27,51 +22,26 @@ function App() {
     },
   ]);
 
-  const [myCart, setMyCart] = React.useState();
+  const [myCart, setMyCart] = React.useState([]);
+
   const [showModal, setShowModal] = React.useState({
     show: false,
     image: null,
   });
 
-  let [x, setX] = React.useState(0);
-  let [y, setY] = React.useState(0);
-
   React.useEffect(() => {
-    const handleModal = (event) => {
-      if (event.target.classList.contains("modal-bg")) {
-        setShowModal(false);
+    window.addEventListener("click", (event) => {
+      if (event.target.className === "modal-bg") {
+        const cloneShowModal = { ...showModal };
+        cloneShowModal.show = false;
+        cloneShowModal.image = null;
+        setShowModal(cloneShowModal);
       }
-    };
-
-    window.addEventListener("click", handleModal);
-
-    return () => {
-      window.removeEventListener("click", handleModal);
-    };
+    });
   }, []);
-
-  const a = React.useCallback(() => {
-    console.log(y);
-  }, [x]);
-
-  a();
 
   return (
     <div className="App">
-      <button
-        onClick={() => {
-          setX((x += 1));
-        }}
-      >
-        X {x}
-      </button>
-      <button
-        onClick={() => {
-          setY((y += 1));
-        }}
-      >
-        Y {y}
-      </button>
       <div className="wrapper">
         <div className="screen -left">
           <img
@@ -91,8 +61,8 @@ function App() {
                           <img
                             onClick={() => {
                               const cloneShowModal = { ...showModal };
-                              cloneShowModal.image = item.image;
                               cloneShowModal.show = true;
+                              cloneShowModal.image = item.image;
                               setShowModal(cloneShowModal);
                             }}
                             src={item.image}
@@ -104,7 +74,16 @@ function App() {
                         <div className="description">{item.descrition}</div>
                         <div className="bottom-area">
                           <div className="price">{item.price}</div>
-                          <div className="button">
+                          <div
+                            className="button"
+                            onClick={() => {
+                              // myCart 배열에 똑같은 상품이 있는지 확인
+                              // 똑같은 상품있으면 push X
+                              const cloneMyCart = [...myCart];
+                              cloneMyCart.push(item);
+                              setMyCart(cloneMyCart);
+                            }}
+                          >
                             <p>ADD TO CART</p>
                           </div>
                         </div>
@@ -167,7 +146,7 @@ function App() {
                   fontWeight: "bold",
                 }}
               >
-                Your Cart is Empty
+                없습니다.
               </div>
             )}
           </div>
@@ -175,12 +154,12 @@ function App() {
       </div>
 
       {showModal.show && (
-        <React.Fragment>
+        <>
           <div className="modal-bg" />
           <div className="modal">
             <img src={showModal.image} alt="확대사진" />
           </div>
-        </React.Fragment>
+        </>
       )}
     </div>
   );
