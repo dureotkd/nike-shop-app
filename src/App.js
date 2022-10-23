@@ -239,4 +239,20 @@ function App() {
   );
 }
 
-export default App;
+function Test() {
+  const 상품정보가져오기 = async () => {
+    await axios({
+      url: "http://localhost:4000/product",
+    }).then((res) => {
+      console.log(res);
+    });
+  };
+
+  return (
+    <div style={{ padding: 100 }}>
+      <button onClick={상품정보가져오기}>상품 정보 가져오기</button>
+    </div>
+  );
+}
+
+export default Test;

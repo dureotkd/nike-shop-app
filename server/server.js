@@ -1,20 +1,56 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const bodyParser = require("body-parser");
 
-/**
- * DB : 데이터 영구저장소
- */
-const DB = {
-  장바구니: [],
-  테스트: [],
-};
+// MYSQL 연결 ===========================
 
 app.use(
   cors({
     origin: true,
   })
 );
+const mysql = require("mysql2");
+const DB = mysql.createPoolCluster();
+
+// 127.0.0.1  === localhost
+DB.add("nike_shop", {
+  host: "127.0.0.1",
+  user: "root",
+  password: "",
+  database: "nike_shop",
+  port: 3306,
+});
+
+// MYSQL 연결 ===========================
+
+// MYSQL 가져오기 =======================
+
+app.get("/product", async (req, res) => {
+  // 비동기 = Promise 객체
+  const data = await new Promise((resolve) => {
+    DB.getConnection("nike_shop", (error, connection) => {
+      if (error) {
+        console.log("데이터베이스 연결 오류 ===>", error);
+        return;
+      }
+      connection.query("SELECT * FROM product", (error, data) => {
+        if (error) {
+          console.log("쿼리 오류 ===>", error);
+          return;
+        }
+
+        resolve(data);
+      });
+    });
+  });
+
+  console.log(data);
+
+  //
+
+  res.send(data);
+});
 
 const port = 4000;
 
@@ -27,17 +63,6 @@ app.get("/myCart", (req, res) => {
   res.send("??");
 });
 
-app.get("/test", (req, res) => {
-  DB.테스트.push("테스트중입니다");
-
-  console.log(DB.테스트);
-
-  res.send({
-    code: "success",
-    msg: "테스트 성공",
-  });
-});
-
 /**
  * 쿼리스트링
  * req : 요청
@@ -46,4 +71,28 @@ app.get("/test", (req, res) => {
 
 app.listen(port, () => {
   console.log("Start Node.js Server");
+});
+
+app.get("/products", async (req, res) => {
+  let result = null;
+
+  const data = await new Promise((resolve) => {
+    DB.getConnection("nike_shop", function (err, connection) {
+      if (err) {
+        console.log("연결 에러 !! ===>", err);
+      }
+
+      connection.query("SELECT * FROM products", function (err, data) {
+        if (err) {
+          console.log("쿼리 에러 !! ===>", err);
+        }
+
+        resolve(data);
+      });
+    });
+  });
+
+  console.log(data);
+
+  res.send("");
 });
