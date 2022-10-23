@@ -76,13 +76,54 @@ app.listen(port, () => {
 app.get("/products", async (req, res) => {
   let result = null;
 
+  const 쿼리 = 인서트만들기({
+    table: "product",
+    data: {
+      name: "조던1111",
+      cost: 10000,
+    },
+  });
+
+  const data = await 디비실행({
+    database: "nike_shop",
+    query: 쿼리,
+  });
+
+  // console.log(data);
+
+  res.send("");
+});
+
+/**
+ * INSERT INTO 테이블명(컬럼~~) VALUES(데이터~~)
+ *
+ * ex) INSERT INTO product(name,cost,local) VALUES('조던',10000,'대전');
+ */
+function 인서트만들기(params) {
+  const { table, data } = params;
+
+  const 컬럼 = Object.keys(data);
+  const 값 = Object.values(data);
+
+  const 쿼리 = `INSERT INTO ${table}(${컬럼.join(",")}) VALUES('${값.join(
+    "','"
+  )}')`;
+
+  console.log(쿼리);
+
+  return 쿼리;
+}
+
+async function 디비실행(params) {
+  const { database, query } = params;
+
   const data = await new Promise((resolve) => {
-    DB.getConnection("nike_shop", function (err, connection) {
+    DB.getConnection(database, function (err, connection) {
       if (err) {
         console.log("연결 에러 !! ===>", err);
       }
 
-      connection.query("SELECT * FROM products", function (err, data) {
+      connection.query(query, function (err, data) {
         if (err) {
           console.log("쿼리 에러 !! ===>", err);
         }
@@ -92,7 +133,5 @@ app.get("/products", async (req, res) => {
     });
   });
 
-  console.log(data);
-
-  res.send("");
-});
+  return data;
+}
