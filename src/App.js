@@ -4,7 +4,7 @@ import axios from "axios";
 import "./App.css";
 
 function 상품정보(props) {
-  const { item, 모달창열기, 상품액션 } = props;
+  const { item, 모달창열기, 상품액션, 버튼이름, 버튼 } = props;
 
   return (
     <div>
@@ -23,7 +23,7 @@ function 상품정보(props) {
           <div className="bottom-area">
             <div className="price">{item.price}</div>
             <div className="button" onClick={상품액션.bind(this, item)}>
-              <p>ADD TO CART</p>
+              <버튼 />
             </div>
           </div>
         </div>
@@ -136,6 +136,10 @@ function App() {
     setMyCart(cloneMyCart);
   };
 
+  const 상품장바구니에서삭제하기 = () => {
+    alert("장바구니에서 삭제해야합니다!");
+  };
+
   return (
     <div className="App">
       <div className="wrapper">
@@ -155,6 +159,9 @@ function App() {
                     item={item}
                     모달창열기={모달창열기}
                     상품액션={상품장바구니에담기}
+                    버튼={() => {
+                      return <p>ADD TO CART</p>;
+                    }}
                   />
                 );
               })}
@@ -172,43 +179,16 @@ function App() {
             {myCart ? (
               myCart.map((item, index) => {
                 return (
-                  <div key={`products-${index}`}>
-                    <div className="item">
-                      <div className="item-block">
-                        <div className="image-area">
-                          <img
-                            onClick={() => {
-                              const cloneShowModal = { ...showModal };
-                              cloneShowModal.image = item.image;
-                              cloneShowModal.show = true;
-                              setShowModal(cloneShowModal);
-                            }}
-                            src={item.image}
-                            alt="상품이미지"
-                            className="image"
-                          />
-                        </div>
-                        <div className="name">{item.name}</div>
-                        <div className="description">{item.descrition}</div>
-                        <div className="bottom-area">
-                          <div className="price">{item.price}</div>
-                          <div
-                            className="button"
-                            onClick={() => {
-                              const cloneMyCart = [...myCart];
-                              const newMyCart = cloneMyCart.filter((myItem) => {
-                                return myItem.name !== item.name;
-                              });
-                              setMyCart(newMyCart);
-                            }}
-                            style={{ backgroundColor: "red", color: "#fff" }}
-                          >
-                            <p>REMOVE</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <상품정보
+                    key={`myCart-${index}`}
+                    item={item}
+                    모달창열기={모달창열기}
+                    상품액션={상품장바구니에서삭제하기}
+                    버튼이름="DELETE"
+                    버튼={() => {
+                      return <p style={{ color: "red" }}>DELETE</p>;
+                    }}
+                  />
                 );
               })
             ) : (
