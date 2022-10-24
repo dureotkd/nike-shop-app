@@ -1,8 +1,37 @@
+/* eslint-disable react/jsx-pascal-case */
 import React from "react";
-
 import axios from "axios";
-
 import "./App.css";
+
+function 상품정보(props) {
+  const { item, 모달창열기, 상품액션 } = props;
+
+  return (
+    <div>
+      <div className="item">
+        <div className="item-block">
+          <div className="image-area">
+            <img
+              onClick={모달창열기.bind(this, item)}
+              src={item.image}
+              alt="상품이미지"
+              className="image"
+            />
+          </div>
+          <div className="name">{item.name}</div>
+          <div className="description">{item.descrition}</div>
+          <div className="bottom-area">
+            <div className="price">{item.price}</div>
+            <div className="button" onClick={상품액션.bind(this, item)}>
+              <p>ADD TO CART</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const [products, setProducts] = React.useState([
     {
@@ -30,18 +59,22 @@ function App() {
     image: null,
   });
 
-  const 서버에있는장바구니가져오기 = async () => {
+  const 서버에있는상품정보가져오기 = async () => {
     await axios({
+      method: "get",
+      dataType: "json",
       url: "http://localhost:4000/myCart",
     })
-      .then((response) => {
-        // setMyCart();
+      .then((res) => {
+        setMyCart(res.data);
       })
-      .catch((e) => {});
+      .catch((e) => {
+        console.log(e);
+      });
   };
 
   React.useEffect(() => {
-    서버에있는장바구니가져오기();
+    서버에있는상품정보가져오기();
   }, []);
 
   React.useEffect(() => {
@@ -66,33 +99,45 @@ function App() {
     return 금액;
   }, [myCart]);
 
-  const 서버요청테스트 = async () => {
-    /**
-     * 동기 : 위에서부터 아래로 실행
-     * 비동기 : 알수없음
-     *
-     * 4초 이상 걸림
-     */
+  const 모달창열기 = (item) => {
+    const cloneShowModal = { ...showModal };
+    cloneShowModal.show = true;
+    cloneShowModal.image = item.image;
+    setShowModal(cloneShowModal);
+  };
+
+  const 상품장바구니에담기 = async (item) => {
+    // myCart 배열에 똑같은 상품이 있는지 확인
+    // 똑같은 상품있으면 push X
+    const cloneMyCart = [...myCart];
+
+    const 이미가지고있는상품 = cloneMyCart.find((myItem) => {
+      return myItem.name === item.name;
+    });
+
+    if (이미가지고있는상품) {
+      alert("이미 해당 상품을 가지고 있습니다");
+      return;
+    }
+
+    // await 비동기 => 동기
     await axios({
+      url: "http://localhost:4000/add/cart",
       method: "get",
       dataType: "json",
-      url: "http://localhost:4000/test",
-      params: {
-        age: 30,
-        name: "SungMin",
-      },
+      params: item,
     })
-      .then((response) => {})
+      .then((res) => {})
       .catch((e) => {
-        console.log("네트워크 요청 에러..", e);
+        console.log(e);
       });
+
+    cloneMyCart.push(item);
+    setMyCart(cloneMyCart);
   };
 
   return (
     <div className="App">
-      <button onClick={서버요청테스트} style={{ padding: 100 }}>
-        서버 요청 테스트 !!
-      </button>
       <div className="wrapper">
         <div className="screen -left">
           <img
@@ -105,54 +150,12 @@ function App() {
             {products &&
               products.map((item, index) => {
                 return (
-                  <div key={`products-${index}`}>
-                    <div className="item">
-                      <div className="item-block">
-                        <div className="image-area">
-                          <img
-                            onClick={() => {
-                              const cloneShowModal = { ...showModal };
-                              cloneShowModal.show = true;
-                              cloneShowModal.image = item.image;
-                              setShowModal(cloneShowModal);
-                            }}
-                            src={item.image}
-                            alt="상품이미지"
-                            className="image"
-                          />
-                        </div>
-                        <div className="name">{item.name}</div>
-                        <div className="description">{item.descrition}</div>
-                        <div className="bottom-area">
-                          <div className="price">{item.price}</div>
-                          <div
-                            className="button"
-                            onClick={() => {
-                              // myCart 배열에 똑같은 상품이 있는지 확인
-                              // 똑같은 상품있으면 push X
-                              const cloneMyCart = [...myCart];
-
-                              const 이미가지고있는상품 = cloneMyCart.find(
-                                (myItem) => {
-                                  return myItem.name === item.name;
-                                }
-                              );
-
-                              if (이미가지고있는상품) {
-                                alert("이미 해당 상품을 가지고 있습니다");
-                                return;
-                              }
-
-                              cloneMyCart.push(item);
-                              setMyCart(cloneMyCart);
-                            }}
-                          >
-                            <p>ADD TO CART</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <상품정보
+                    key={`product-${index}`}
+                    item={item}
+                    모달창열기={모달창열기}
+                    상품액션={상품장바구니에담기}
+                  />
                 );
               })}
           </div>
@@ -239,20 +242,4 @@ function App() {
   );
 }
 
-function Test() {
-  const 상품정보가져오기 = async () => {
-    await axios({
-      url: "http://localhost:4000/product",
-    }).then((res) => {
-      console.log(res);
-    });
-  };
-
-  return (
-    <div style={{ padding: 100 }}>
-      <button onClick={상품정보가져오기}>상품 정보 가져오기</button>
-    </div>
-  );
-}
-
-export default Test;
+export default App;
